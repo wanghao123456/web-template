@@ -28,7 +28,7 @@ public class MywebApplicationTests {
         page.setSize(100);
         page.setCurrent(10);
         photoMapper.selectPage(page, null);
-        System.out.println(page);
+        System.out.println(page.getRecords());
     }
 
 }
