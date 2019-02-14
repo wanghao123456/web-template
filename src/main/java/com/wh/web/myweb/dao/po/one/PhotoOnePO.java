@@ -1,4 +1,4 @@
-package com.wh.web.myweb.dao.po;
+package com.wh.web.myweb.dao.po.one;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @TableName("photo")
-public class PhotoPO {
+public class PhotoOnePO {
 
     private Long id;
     private String name;
