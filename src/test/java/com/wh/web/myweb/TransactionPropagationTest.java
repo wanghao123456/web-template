@@ -1,7 +1,7 @@
 package com.wh.web.myweb;
 
 import com.wh.web.myweb.bo.PhotoBO;
-import com.wh.web.myweb.service.impl.PhotoServiceImpl;
+import com.wh.web.myweb.service.PhotoService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class TransactionPropagationTest {
 
     @Autowired
-    private PhotoServiceImpl photoService;
+    private PhotoService photoService;
 
     @Test
     public void test() {

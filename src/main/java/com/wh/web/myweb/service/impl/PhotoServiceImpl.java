@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class PhotoServiceImpl implements PhotoService {
 
     @Autowired
+    private PhotoService photoService;
+
+    @Autowired
     private PhotoMapperOne photoMapperOne;
 
     @Autowired
@@ -27,13 +30,13 @@ public class PhotoServiceImpl implements PhotoService {
     public void base(PhotoBO photoBO) {
         insertPhotoOne(photoBO);
 
-        testRequired(photoBO);
-        testRequiresNew(photoBO);
-        testSupports(photoBO);
-        testNotSupported(photoBO);
-        testNested(photoBO);
-        testMandatory(photoBO);
-        testNever(photoBO);
+        photoService.testRequired(photoBO);
+        photoService.testRequiresNew(photoBO);
+        photoService.testSupports(photoBO);
+        photoService.testNotSupported(photoBO);
+        photoService.testNested(photoBO);
+        photoService.testMandatory(photoBO);
+        photoService.testNever(photoBO);
     }
 
     @Override
