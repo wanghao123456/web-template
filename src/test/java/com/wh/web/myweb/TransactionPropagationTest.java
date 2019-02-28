@@ -1,15 +1,15 @@
 package com.wh.web.myweb;
 
 import com.wh.web.myweb.bo.PhotoBO;
-import com.wh.web.myweb.dao.mapper.one.PhotoMapperOne;
-import com.wh.web.myweb.dao.mapper.two.PhotoMapperTwo;
 import com.wh.web.myweb.service.PhotoService;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
@@ -24,12 +24,29 @@ public class TransactionPropagationTest {
     private PhotoService photoService;
 
     @Autowired
-    private PhotoMapperOne photoMapperOne;
+    @Qualifier("jdbcTemplateOne")
+    private JdbcTemplate jdbcTemplateOne;
 
     @Autowired
-    private PhotoMapperTwo photoMapperTwo;
+    @Qualifier("jdbcTemplateTwo")
+    private JdbcTemplate jdbcTemplateTwo;
 
     private static PhotoBO photoBO = new PhotoBO();
+
+    private String createTableSql = "" +
+            "create table photo\n" +
+            "(\n" +
+            "  id bigint auto_increment,\n" +
+            "  name varchar(64) default '' not null,\n" +
+            "  url varchar(128) default '' not null\n" +
+            ")";
+
+    /**
+     * 此处注意下 H2的truncate语句和MySQL的truncate语句有细微差别（H2 多了 table）
+     */
+    private String truncateTableSql = "truncate table photo";
+
+    private boolean init = true;
 
     /**
      * 测试开始之前初始化需要的数据
@@ -45,8 +62,13 @@ public class TransactionPropagationTest {
      */
     @Before
     public void testBefore() {
-        photoMapperOne.delete(null);
-        photoMapperTwo.delete(null);
+        if (init) {
+            jdbcTemplateOne.execute(createTableSql);
+            jdbcTemplateTwo.execute(createTableSql);
+            init = false;
+        }
+        jdbcTemplateOne.execute(truncateTableSql);
+        jdbcTemplateTwo.execute(truncateTableSql);
     }
 
     @Test(expected = RuntimeException.class)
