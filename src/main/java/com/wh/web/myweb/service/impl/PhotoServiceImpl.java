@@ -27,69 +27,116 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional(transactionManager = "TransactionManagerOne", rollbackFor = Exception.class)
-    public void base(PhotoBO photoBO) {
-        insertPhotoOne(photoBO);
+    public void baseOne(PhotoBO photoBO, Propagation propagation, boolean baseException, boolean testException) {
+        insertPhotoOne(photoBO, false);
+        selectPropagation(photoBO, propagation, testException);
+        if (baseException) {
+            throw new RuntimeException("baseOne");
+        }
+    }
 
-        photoService.testRequired(photoBO);
-        photoService.testRequiresNew(photoBO);
-        photoService.testSupports(photoBO);
-        photoService.testNotSupported(photoBO);
-        photoService.testNested(photoBO);
-        photoService.testMandatory(photoBO);
-        photoService.testNever(photoBO);
+    @Override
+    @Transactional(transactionManager = "TransactionManagerTwo", rollbackFor = Exception.class)
+    public void baseTwo(PhotoBO photoBO, Propagation propagation, boolean baseException, boolean testException) {
+        insertPhotoTwo(photoBO, false);
+        selectPropagation(photoBO, propagation, testException);
+        if (baseException) {
+            throw new RuntimeException("baseTwo");
+        }
     }
 
     @Override
     @Transactional(transactionManager = "TransactionManagerTwo", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void testRequired(PhotoBO photoBO) {
-        insertPhotoTwo(photoBO);
+    public void testRequired(PhotoBO photoBO, boolean testException) {
+        insertPhotoTwo(photoBO, testException);
     }
 
     @Override
     @Transactional(transactionManager = "TransactionManagerTwo", propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
-    public void testSupports(PhotoBO photoBO) {
-        insertPhotoTwo(photoBO);
+    public void testSupports(PhotoBO photoBO, boolean testException) {
+        insertPhotoTwo(photoBO, testException);
     }
 
     @Override
     @Transactional(transactionManager = "TransactionManagerTwo", propagation = Propagation.MANDATORY, rollbackFor = Exception.class)
-    public void testMandatory(PhotoBO photoBO) {
-        insertPhotoTwo(photoBO);
+    public void testMandatory(PhotoBO photoBO, boolean testException) {
+        insertPhotoTwo(photoBO, testException);
     }
 
     @Override
     @Transactional(transactionManager = "TransactionManagerTwo", propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public void testRequiresNew(PhotoBO photoBO) {
-        insertPhotoTwo(photoBO);
+    public void testRequiresNew(PhotoBO photoBO, boolean testException) {
+        insertPhotoTwo(photoBO, testException);
     }
 
     @Override
     @Transactional(transactionManager = "TransactionManagerTwo", propagation = Propagation.NOT_SUPPORTED, rollbackFor = Exception.class)
-    public void testNotSupported(PhotoBO photoBO) {
-        insertPhotoTwo(photoBO);
+    public void testNotSupported(PhotoBO photoBO, boolean testException) {
+        insertPhotoTwo(photoBO, testException);
     }
 
     @Override
     @Transactional(transactionManager = "TransactionManagerTwo", propagation = Propagation.NEVER, rollbackFor = Exception.class)
-    public void testNever(PhotoBO photoBO) {
-        insertPhotoTwo(photoBO);
+    public void testNever(PhotoBO photoBO, boolean testException) {
+        insertPhotoTwo(photoBO, testException);
     }
 
     @Override
     @Transactional(transactionManager = "TransactionManagerTwo", propagation = Propagation.NESTED, rollbackFor = Exception.class)
-    public void testNested(PhotoBO photoBO) {
-        insertPhotoTwo(photoBO);
+    public void testNested(PhotoBO photoBO, boolean testException) {
+        insertPhotoTwo(photoBO, testException);
     }
 
-    private void insertPhotoOne(PhotoBO photoBO) {
+    @Override
+    @Transactional(transactionManager = "TransactionManagerOne", propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void differentDataSourceDifferentTransactionManager(PhotoBO photoBO, boolean testException) {
+        insertPhotoTwo(photoBO, testException);
+    }
+
+    private void insertPhotoOne(PhotoBO photoBO, boolean testException) {
         PhotoOnePO photoOnePO = new PhotoOnePO();
         BeanUtils.copyProperties(photoBO, photoOnePO);
         photoMapperOne.insert(photoOnePO);
+        if (testException) {
+            throw new RuntimeException("insertPhotoOne");
+        }
     }
 
-    private void insertPhotoTwo(PhotoBO photoBO) {
+    private void insertPhotoTwo(PhotoBO photoBO, boolean testException) {
         PhotoTwoPO photoTwoPO = new PhotoTwoPO();
         BeanUtils.copyProperties(photoBO, photoTwoPO);
         photoMapperTwo.insert(photoTwoPO);
+        if (testException) {
+            throw new RuntimeException("insertPhotoTwo");
+        }
+    }
+
+    private void selectPropagation(PhotoBO photoBO, Propagation propagation, boolean testException) {
+        try {
+            switch (propagation) {
+                case REQUIRED:
+                    photoService.testRequired(photoBO, testException);
+                    break;
+                case REQUIRES_NEW:
+                    photoService.testRequiresNew(photoBO, testException);
+                    break;
+                case SUPPORTS:
+                    photoService.testSupports(photoBO, testException);
+                    break;
+                case NOT_SUPPORTED:
+                    photoService.testNotSupported(photoBO, testException);
+                    break;
+                case MANDATORY:
+                    photoService.testMandatory(photoBO, testException);
+                    break;
+                case NEVER:
+                    photoService.testNever(photoBO, testException);
+                    break;
+                case NESTED:
+                    photoService.testNested(photoBO, testException);
+                    break;
+            }
+        } catch (Exception e) {
+        }
     }
 }
