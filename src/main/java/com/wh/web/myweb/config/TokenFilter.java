@@ -34,7 +34,7 @@ public class TokenFilter extends OncePerRequestFilter {
             String userName = tokenUtil.getUserNameFromToken(authToken);
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-                if (tokenUtil.validateToken(authToken, userDetails)) {
+                if (userDetails != null && tokenUtil.validateToken(authToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

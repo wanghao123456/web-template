@@ -32,11 +32,11 @@ public class AuthServiceImpl implements AuthService {
     private UserRoleMapper userRoleMapper;
 
     @Override
-    public String login(String userName, String passWord) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userName, passWord);
+    public String login(UserBO userBO) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userBO.getUsername(), userBO.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userBO.getUsername());
         String token = tokenUtil.generateToken(userDetails);
         return token;
     }
@@ -46,11 +46,9 @@ public class AuthServiceImpl implements AuthService {
         if (userRoleMapper.loadUserByUserName(userBO.getUsername()) != null) {
             return false;
         }
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        userBO.setPassWord(encoder.encode(userBO.getPassword()));
         UserPO userPO = new UserPO();
         userPO.setUserName(userBO.getUsername());
-        userPO.setPassWord(userBO.getPassword());
+        userPO.setPassWord(new BCryptPasswordEncoder().encode(userBO.getPassword()));
         return userRoleMapper.addUser(userPO) == 1;
     }
 }

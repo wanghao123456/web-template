@@ -7,6 +7,6 @@ import com.wh.web.myweb.service.IPhotoService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class IPhotoServiceImpl extends ServiceImpl<PhotoMapper, PhotoPO> implements IPhotoService {
+public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, PhotoPO> implements IPhotoService {
 
 }

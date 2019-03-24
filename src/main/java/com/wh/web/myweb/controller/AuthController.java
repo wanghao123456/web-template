@@ -4,7 +4,10 @@ import com.wh.web.myweb.model.bo.UserBO;
 import com.wh.web.myweb.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -15,8 +18,8 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("login")
-    public String createToken(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) throws AuthenticationException {
-        return authService.login(userName, passWord);
+    public String login(@RequestBody UserBO userBO) throws AuthenticationException {
+        return authService.login(userBO);
     }
 
     @PostMapping("register")

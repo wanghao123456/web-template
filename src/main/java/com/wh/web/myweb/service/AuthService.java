@@ -6,5 +6,5 @@ public interface AuthService {
 
     boolean register(UserBO userBO);
 
-    String login(String userName, String passWord);
+    String login(UserBO userBO);
 }

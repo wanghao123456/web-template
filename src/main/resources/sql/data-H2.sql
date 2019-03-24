@@ -2,7 +2,7 @@ insert into photo (name, url)
 values ('hello', 'photo/hello-world');
 
 insert into user (id, user_name, pass_word)
-values (1, 'admin', '$2a$10$wxlkZZQh6uhNJ.Wx/joizeYY8khmQyqeN9qPpN3YQf.rTPagWXE/y');
+values (1, 'admin', '$2a$10$gTioGmdZAcuFbfmLInUMNewCDYKx7teUlhubglDlkv3ZMX.dI4SMe');
 
 insert into role(id, role_name)
 values (1, 'admin'),
