@@ -2,6 +2,7 @@ package com.wh.web.myweb.service.impl;
 
 import com.wh.web.myweb.dao.mapper.UserRoleMapper;
 import com.wh.web.myweb.dao.po.UserPO;
+import com.wh.web.myweb.dao.po.UserRolePO;
 import com.wh.web.myweb.model.bo.UserBO;
 import com.wh.web.myweb.service.AuthService;
 import com.wh.web.myweb.util.TokenUtil;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -41,14 +43,20 @@ public class AuthServiceImpl implements AuthService {
         return token;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean register(UserBO userBO) {
-        if (userRoleMapper.loadUserByUserName(userBO.getUsername()) != null) {
-            return false;
+        if (userRoleMapper.loadUserByUserName(userBO.getUsername()) == null) {
+            UserPO userPO = new UserPO();
+            userPO.setUserName(userBO.getUsername());
+            userPO.setPassWord(new BCryptPasswordEncoder().encode(userBO.getPassword()));
+            if (userRoleMapper.addUser(userPO) == 1) {
+                UserRolePO userRolePO = new UserRolePO();
+                userRolePO.setUserId(userPO.getId());
+                userRolePO.setRoleId(3);
+                return userRoleMapper.addUserRole(userRolePO) == 1;
+            }
         }
-        UserPO userPO = new UserPO();
-        userPO.setUserName(userBO.getUsername());
-        userPO.setPassWord(new BCryptPasswordEncoder().encode(userBO.getPassword()));
-        return userRoleMapper.addUser(userPO) == 1;
+        return false;
     }
 }

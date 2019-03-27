@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class UserPO {
 
+    private Integer id;
     private String userName;
     private String passWord;
 }

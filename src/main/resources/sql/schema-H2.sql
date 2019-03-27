@@ -11,7 +11,8 @@ create table user
   id        int          not null auto_increment comment '主键',
   user_name varchar(32)  not null default '' comment '用户名',
   pass_word varchar(128) not null default '' comment '密码',
-  primary key (id)
+  primary key (id),
+  unique (user_name)
 );
 
 
